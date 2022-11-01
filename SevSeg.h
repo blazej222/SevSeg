@@ -51,6 +51,7 @@ public:
   void setSegmentsDigit(const uint8_t digitNum, const uint8_t segs);
   void setChars(const char str[]);
   void blank(void);
+  volatile bool isFinished = true;
 
 private:
   void setNewNum(int32_t numToShow, int8_t decPlaces, bool hex=0);
@@ -67,12 +68,12 @@ private:
   uint8_t segmentPins[8];
   uint8_t numDigits;
   uint8_t numSegments;
-  uint8_t prevUpdateIdx; // The previously updated segment or digit
-  uint8_t digitCodes[MAXNUMDIGITS]; // The active setting of each segment of each digit
-  uint32_t prevUpdateTime; // The time (millis()) when the display was last updated
-  uint16_t ledOnTime; // The time (us) to wait with LEDs on
-  uint16_t waitOffTime; // The time (us) to wait with LEDs off
-  bool waitOffActive; // Whether  the program is waiting with LEDs off
+  volatile uint8_t prevUpdateIdx; // The previously updated segment or digit
+  volatile uint8_t digitCodes[MAXNUMDIGITS]; // The active setting of each segment of each digit
+  volatile uint32_t prevUpdateTime; // The time (millis()) when the display was last updated
+  volatile int16_t ledOnTime; // The time (us) to wait with LEDs on
+  volatile int16_t waitOffTime; // The time (us) to wait with LEDs off
+  volatile bool waitOffActive; // Whether  the program is waiting with LEDs off
 };
 
 #endif //SevSeg_h

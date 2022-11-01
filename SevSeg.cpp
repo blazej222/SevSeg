@@ -215,10 +215,10 @@ void SevSeg::refreshDisplay() {
 
     // Exit if it's not time for the next display change
     if (waitOffActive) {
-      if ((us - prevUpdateTime) < waitOffTime) return;
+      if ((int32_t)(us - prevUpdateTime) < waitOffTime) return;
     }
     else {
-      if ((us - prevUpdateTime) < ledOnTime) return;
+      if ((int32_t)(us - prevUpdateTime) < ledOnTime) return;
     }
     prevUpdateTime = us;
 
@@ -405,9 +405,11 @@ void SevSeg::setNumberF(float numToShow, int8_t decPlaces, bool hex) { //float
 /******************************************************************************/
 // Changes the number that will be displayed.
 void SevSeg::setNewNum(int32_t numToShow, int8_t decPlaces, bool hex) {
+  //isFinished = false;
   uint8_t digits[MAXNUMDIGITS];
   findDigits(numToShow, decPlaces, hex, digits);
   setDigitCodes(digits, decPlaces);
+  //isFinished = true;
 }
 
 
@@ -428,9 +430,11 @@ void SevSeg::setNewNum(int32_t numToShow, int8_t decPlaces, bool hex) {
 //                       E    C        4    2        (Segment H is often called
 //                        DDDD  H       3333  7      DP, for Decimal Point)
 void SevSeg::setSegments(const uint8_t segs[]) {
+  isFinished = false;
   for (uint8_t digit = 0; digit < numDigits; digit++) {
     digitCodes[digit] = segs[digit];
   }
+  isFinished = true;
 }
 
 // setSegmentsDigit
@@ -438,9 +442,11 @@ void SevSeg::setSegments(const uint8_t segs[]) {
 // Like setSegments above, but only manipulates the segments for one digit
 // digitNum is 0-indexed.
 void SevSeg::setSegmentsDigit(const uint8_t digitNum, const uint8_t segs) {
+  isFinished = false;
   if (digitNum < numDigits) {
     digitCodes[digitNum] = segs;
   }
+  isFinished = true;
 }
 
 // getSegments
@@ -462,6 +468,7 @@ void SevSeg::getSegments(uint8_t segs[]) {
 // Displays the string on the display, as best as possible.
 // Only alphanumeric characters plus '-' and ' ' are supported
 void SevSeg::setChars(const char str[]) {
+  isFinished = false;
   for (uint8_t digit = 0; digit < numDigits; digit++) {
     digitCodes[digit] = 0;
   }
@@ -503,16 +510,19 @@ void SevSeg::setChars(const char str[]) {
       strIdx++;
     }
   }
+  isFinished = true;
 }
 
 // blank
 /******************************************************************************/
 void SevSeg::blank(void) {
+  isFinished = false;
   for (uint8_t digitNum = 0 ; digitNum < numDigits ; digitNum++) {
     digitCodes[digitNum] = digitCodeMap[BLANK_IDX];
   }
   segmentOff(0);
   digitOff(0);
+  isFinished = true;
 }
 
 // findDigits
@@ -571,7 +581,7 @@ void SevSeg::findDigits(int32_t numToShow, int8_t decPlaces, bool hex, uint8_t d
 /******************************************************************************/
 // Sets the 'digitCodes' that are required to display the input numbers
 void SevSeg::setDigitCodes(const uint8_t digits[], int8_t decPlaces) {
-
+  isFinished = false;
   // Set the digitCode for each digit in the display
   for (uint8_t digitNum = 0 ; digitNum < numDigits ; digitNum++) {
     digitCodes[digitNum] = digitCodeMap[digits[digitNum]];
@@ -582,6 +592,7 @@ void SevSeg::setDigitCodes(const uint8_t digits[], int8_t decPlaces) {
       }
     }
   }
+  isFinished = true;
 }
 
 /// END ///
